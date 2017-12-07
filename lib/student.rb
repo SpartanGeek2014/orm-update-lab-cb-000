@@ -10,6 +10,22 @@ class Student
       @grade = grade
     end
 
+    def self.create_table
+      sql = <<-SQL
+        CREATE TABLE IF NOT EXISTS students (
+          id INTEGER PRIMARY KEY,
+          name TEXT,
+          grade TEXT
+        )
+      SQL
+      DB[:conn].execute(sql)
+    end
+
+    def self.drop_table
+      sql = "DROP TABLE IF EXISTS students"
+      DB[:conn].execute(sql)
+    end
+
     def save
       sql = <<-SQL
         INSERT INTO students (name, grade)
@@ -20,11 +36,6 @@ class Student
       @id = DB[:conn].execute("SELECT last_insert_rowid() FROM students")[0][0]
     end
   end
-
-    def self.drop_table
-      sql = "DROP TABLE IF EXISTS students"
-      DB[:conn].execute(sql)
-    end
 
     def self.create(name:, album:)
       student = Student.new(name, album)
