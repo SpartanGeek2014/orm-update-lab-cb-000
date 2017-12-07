@@ -1,9 +1,30 @@
 require_relative "../config/environment.rb"
 
 class Student
-
+  attr_accessor :name, :grade
+  attr_reader :id
   # Remember, you can access your database connection anywhere in this class
   #  with DB[:conn]
+  def initialize(id=nil, name, grade)
+    @id = id
+    @name = name
+    @grade = grade
+  end
 
+  def save
+    sql = <<-SQL 
+      INSERT INTO students (name, grade)
+      VALUES (?, ?)
+    SQL 
 
-end
+    DB[:conn].execute(sql, self.name, self.grade)
+    @id = DB[:conn].execute("SELECT last_insert_rowid() FROM students")[0][0] 
+  end
+  end
+
+  def self.create(name:, album:)
+    song = Song.new(name, album)
+    song.save
+    song
+  end 
+   
